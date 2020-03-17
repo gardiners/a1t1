@@ -1,0 +1,48 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{minted}
+
+\title{BUSA8090 - Assignment 1, Task 1}
+\author{Samuel Gardiner (44952619)}
+\date{17 March 2020}
+
+\newminted{bash}{
+    style = friendly
+}
+
+\begin{document}
+
+\maketitle
+
+\section{}
+
+Our answer is the following \texttt{bash} script, \texttt{newest.sh}:
+
+\begin{bashcode}
+
+\end{bashcode}
+
+
+\section{}
+
+\section{}
+
+\subsection{}
+'Program 24' is the shell script \texttt{time-signal.sh}, printed at Wünschiers 10.11.2. The script has the URL:
+\url{https://www.staff.hs-mittweida.de/~wuenschi/data/media/compbiolbook/chapter-10-shell-programming--time-signal.sh}. Since this is a publicly available URL, we can easily use \texttt{curl} to read the script from Wünschiers' webserver and write it to a directory on our Ubuntu instance with the file redirect operator, \texttt{>}.
+
+First, we create the directory \texttt{~/bin}:
+\begin{bashcode}
+mkdir -p ~/bin
+\end{bashcode}
+
+We have used the \texttt{-p} argument to \texttt{mkdir} as it prevents \texttt{mkdir} from creating a directory if the directory already exists.
+
+Now, we can write a file \texttt{~/bin/time-signal.sh} using \texttt{curl}:
+
+\begin{minted}{bash}
+
+\end{minted}
+
+\end{document}
