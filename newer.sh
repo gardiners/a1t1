@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# newest: given a list of filenames as arguments, returns the name of the
+# newer: given a list of filenames as arguments, returns the name of the
 # newest file.
-# S Gardiner 
-# 2020-03-17
-#
-# Usage: ./newest.sh [FILE]...
 
+# If the arguments are empty, print usage help text and quit.
 if [ -z "$*" ]; then
-	echo "Usage: ./newest.sh [FILE]..."
+	echo "Usage: ./newer.sh [FILE]..."
 	exit 1
 fi
 
+# Sort the argument filenames by time, and store as a bash array.
 sorted=($(ls -t $*))
+# Return the first element in the array (ie the newest file).
 echo ${sorted[0]}
+
