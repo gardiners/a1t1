@@ -2,34 +2,48 @@
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
 \usepackage{minted}
+\usepackage{xcolor}
 
 \title{BUSA8090 - Assignment 1, Task 1}
 \author{Samuel Gardiner (44952619)}
 \date{17 March 2020}
 
+% Macro setup:
+
+\definecolor{mannibg}{HTML}{f0f3f3}
+
 \newminted{bash}{
-    style = friendly
+    style = friendly,
+    linenos
 }
+
+\newmintedfile[bashfile]{bash}{
+    style=manni,
+    bgcolor=mannibg,
+    linenos
+}
+
+% Content
 
 \begin{document}
 
 \maketitle
 
+\section{Question 1}
+
+We present a script \texttt{newer.sh} which, when given a list of filenames as its command-line arguments, prints the name of the newest file:
+
+\bashfile{newer.sh}
+
+Executable source code is available at \url{https://raw.githubusercontent.com/gardiners/a1t1/master/newer.sh}.
+
 \section{}
 
-Our answer is the following \texttt{bash} script, \texttt{newest.sh}:
-
-\begin{bashcode}
-
-\end{bashcode}
-
-
-\section{}
 
 \section{}
 
 \subsection{}
-'Program 24' is the shell script \texttt{time-signal.sh}, printed at Wünschiers 10.11.2. The script has the URL:
+\textbf{Program 24} is the shell script \texttt{time-signal.sh}, printed at Wünschiers 10.11.2. The script has the URL:
 \url{https://www.staff.hs-mittweida.de/~wuenschi/data/media/compbiolbook/chapter-10-shell-programming--time-signal.sh}. Since this is a publicly available URL, we can easily use \texttt{curl} to read the script from Wünschiers' webserver and write it to a directory on our Ubuntu instance with the file redirect operator, \texttt{>}.
 
 First, we create the directory \texttt{~/bin}:
