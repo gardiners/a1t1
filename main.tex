@@ -16,7 +16,6 @@
 
 \newminted[bashcode]{bash}{
     style = friendly,
-    linenos,
     bgcolor=mannibg
 }
 
@@ -90,6 +89,21 @@ We present our script \texttt{test\_me.sh}, which prints the text ``This is a TE
 
 \bashfile{test_me.sh}
 
+The conditional \texttt{if} at line 7 checks the number of arguments. Since the integer 0 is interpreted as Boolean TRUE in \texttt{bash}, if we have no arguments, the `\texttt{then}' branch of the conditional executes. The complement of \texttt{\$# = 0} is the case where we have any arguments, and in this circumstance the `\texttt{else}' branch is executed.
+
+We can test our script under either of these conditions:
+
+\begin{bashinline}
+ubuntu@ip-172-31-20-200:~/busa/a1t1$ ./test_me.sh
+This is NOT a test
+ubuntu@ip-172-31-20-200:~/busa/a1t1$ ./test_me.sh foo
+This is a TEST
+ubuntu@ip-172-31-20-200:~/busa/a1t1$ ./test_me.sh foo bar baz
+This is a TEST
+\end{bashinline}
+
+We can see that our script has returned the desired output in the zero-argument case, the one-argument case, and the many-argument case.
+
 \section{Question 3}
 
 \subsection{a)}
@@ -111,9 +125,10 @@ We have used the \texttt{-p} argument to \texttt{mkdir} as it prevents \texttt{m
 Now, we can write the file \url{~/bin/time-signal.sh} using \texttt{curl}, and set it to be executable with \texttt{chmod}:
 
 \begin{bashinline}
-ubuntu@ip-172-31-20-200:~$ curl -o ~/bin/time-signal.sh https://www.staff.hs-mittweida.de/~wuenschi/data/media/compbiolbook/chapter-10-shell-programming--time-signal.sh
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
+ubuntu@ip-172-31-20-200:~$ curl -o ~/bin/time-signal.sh https://www.staff.hs-mittweida.de/~wuenschi/data/media/compbiolbook/
+    chapter-10-shell-programming--time-signal.sh
+ % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                Dload  Upload   Total   Spent    Left  Speed
 100   224  100   224    0     0    127      0  0:00:01  0:00:01 --:--:--   127
 ubuntu@ip-172-31-20-200:~$ chmod u+x ~/bin/time-signal.sh
 ubuntu@ip-172-31-20-200:~$ ls -lah ~/bin/time-signal.sh
@@ -124,14 +139,53 @@ We elected to use the \texttt{-o} (output file) switch for \texttt{curl} to spec
 
 \subsection{b)}
 
-From the \texttt{man} page for \texttt{bash}:
+From \texttt{man bash}:
 
 \begin{bashinline}
 ((expression))
       The expression is evaluated according to the rules described below under ARITHMETIC EVALUATION.  If the value of the expression is non-zero, the return status is 0; otherwise the return  status is 1.  This is exactly equivalent to let "expression".
+...
+ARITHMETIC EVALUATION
+       The shell allows arithmetic expressions to be evaluated,  under
+       certain  circumstances  (see  the  let and declare builtin com‐
+       mands, the ((  compound  command,  and  Arithmetic  Expansion).
+...
+       = *= /= %= += -= <<= >>= &= ^= |=
+              assignment
+...
+        Within an expression, shell variables may also be referenced by name
+        without using  the parameter  expansion  syntax.
 \end{bashinline}
 
-and also:
+Which we compare to the current form of line 9 of \texttt{time-signal.sh}:
+
+\begin{bashcode}
+count=$[$count+1]
+\end{bashcode}
+
+So, the syntax ``\texttt{let count=count+1}'' evaluates \texttt{count+1} and reassigns it to \texttt{count}, which is the same outcome as performing the evaluation using arithmetic expansion. When using \texttt{let}, the \texttt{\$} can be omitted from the variable names.
+
+\subsection{c)}
+
+The \texttt{expr} command evaluates arithmetic expressions given as its arguments. The \texttt{\$()} construct captures its output and it is assigned to the variable \texttt{count}. Examining the entire command
+
+\begin{bashcode}
+count=$(expr $count + 1)
+\end{bashcode}
+
+We can therefore construct the sequence of operations that yields the result:
+\begin{itemize}
+\item \texttt{\$count} is substituted with its value (hopefully an integer)
+\item \texttt{expr} evaluates its arguments
+\item \texttt{\$()} captures the results of executing \texttt{expr}; and
+\item the result is reassigned to \texttt{count}.
+\end{itemize}
+
+This is the same outcome as the original code (that is, incrementing the value of \texttt{count}).
+
+\subsection{d)}
+
+From \texttt{man bash}:
 
 \begin{bashinline}
 Arithmetic Expansion
@@ -142,4 +196,21 @@ Arithmetic Expansion
     The old format $[expression] is deprecated and will be removed in upcoming versions of bash.
 \end{bashinline}
 
+So, the expressions
+
+\begin{bashcode}
+$((count+1))
+\end{bashcode}
+
+and
+
+\begin{bashcode}
+$[$count+1]
+\end{bashcode}
+
+are functionally identical, although the latter form should be avoided as it may stop working in a future version of \texttt{bash}. The inner \texttt{\$} symbol could safely be omitted in the original code, in keeping with \texttt{bash}'s rules for arithmetic expansion and arithmetic evaluation.
+
+Both versions of the code increment \texttt{count}.
+
 \end{document}
+
