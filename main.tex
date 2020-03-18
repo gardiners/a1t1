@@ -3,18 +3,28 @@
 \usepackage{hyperref}
 \usepackage{minted}
 \usepackage{xcolor}
+\usepackage[a4paper]{geometry}
 
 \title{BUSA8090 - Assignment 1, Task 1}
 \author{Samuel Gardiner (44952619)}
 \date{17 March 2020}
 
-% Macro setup:
+% Setup:
+\setcounter{secnumdepth}{0}
 
 \definecolor{mannibg}{HTML}{f0f3f3}
 
-\newminted{bash}{
+\newminted[bashcode]{bash}{
     style = friendly,
-    linenos
+    linenos,
+    bgcolor=mannibg
+}
+
+\newminted[bashinline]{text}{
+    style = friendly,
+    bgcolor=mannibg,
+    breaklines,
+    mathescape
 }
 
 \newmintedfile[bashfile]{bash}{
@@ -31,32 +41,105 @@
 
 \section{Question 1}
 
-We present a script \texttt{newer.sh} which, when given a list of filenames as its command-line arguments, prints the name of the newest file:
+We present a script \texttt{newer.sh} which, when given a list of filenames as its command-line arguments, prints the name of the newest file. Executable source code is available at \url{https://raw.githubusercontent.com/gardiners/a1t1/master/newer.sh}
 
 \bashfile{newer.sh}
 
-Executable source code is available at \url{https://raw.githubusercontent.com/gardiners/a1t1/master/newer.sh}.
+The \texttt{if} conditional at lines 7-10 checks whether the user has given any arguments. If the list of arguments (that is, \texttt{\$*}) is empty, our script prints a helpful usage message, and then quits.
 
-\section{}
+The heavy lifting is performed by the command \texttt{ls -t \$*} on line 13. The \texttt{-t} argument tells \texttt{ls} to sort its output by file time, and we have provided our list of script-calling arguments \texttt{\$*} as the input. The output of \texttt{ls} is captured by the \texttt{\$()} construct, and then captured again by an outer pair of parentheses to form a \texttt{bash} array which we have named \texttt{sorted}.
 
+To print the name of the newest file, we simply return the first element (ie element \texttt{[0]}) of our array at line 15. 
 
-\section{}
+To test whether the script works, we create three files with known modification times and check whether \texttt{newer.sh} correctly returns the newest:
 
-\subsection{}
-\textbf{Program 24} is the shell script \texttt{time-signal.sh}, printed at Wünschiers 10.11.2. The script has the URL:
-\url{https://www.staff.hs-mittweida.de/~wuenschi/data/media/compbiolbook/chapter-10-shell-programming--time-signal.sh}. Since this is a publicly available URL, we can easily use \texttt{curl} to read the script from Wünschiers' webserver and write it to a directory on our Ubuntu instance with the file redirect operator, \texttt{>}.
+\begin{bashinline}
+ubuntu@ip-172-31-20-200:~/busa/a1t1$ touch -t 202003151800 foo
+ubuntu@ip-172-31-20-200:~/busa/a1t1$ touch -t 202003151801 goo
+ubuntu@ip-172-31-20-200:~/busa/a1t1$ touch -t 202003151802 hoo
+ubuntu@ip-172-31-20-200:~/busa/a1t1$ ./newer.sh foo goo hoo
+hoo
+\end{bashinline}
 
-First, we create the directory \texttt{~/bin}:
-\begin{bashcode}
-mkdir -p ~/bin
-\end{bashcode}
+As expected, the script returns the newest file, \texttt{hoo}, which has a modification time a minute later than \texttt{goo} and two minutes later than \texttt{foo}. This remains the case if we change the order of the filename arguments:
 
-We have used the \texttt{-p} argument to \texttt{mkdir} as it prevents \texttt{mkdir} from creating a directory if the directory already exists.
+\begin{bashinline}
+ubuntu@ip-172-31-20-200:~/busa/a1t1$ ./newer.sh goo hoo foo
+hoo
+\end{bashinline}
 
-Now, we can write a file \texttt{~/bin/time-signal.sh} using \texttt{curl}:
+If we specify a filename that doesn't exist, we get a useful error message from \texttt{ls} itself on \texttt{stderr}, but still get the newest of the files that we correctly specified:
 
-\begin{minted}{bash}
+\begin{bashinline}
+ubuntu@ip-172-31-20-200:~/busa/a1t1$ ./newer.sh foo bar hoo goo baz
+ls: cannot access 'bar': No such file or directory
+ls: cannot access 'baz': No such file or directory
+hoo
+\end{bashinline}
 
-\end{minted}
+Finally, if we specify no filenames at all, we get a helpful message explaining how to use the script:
+
+\begin{bashinline}
+ubuntu@ip-172-31-20-200:~/busa/a1t1$ ./newer.sh
+Usage: ./newer.sh [FILE]...
+\end{bashinline}
+
+\section{Question 2}
+
+We present our script \texttt{test\_me.sh}, which prints the text ``This is a TEST'' to the terminal if called without any arguments, but prints ``This is NOT a test'' if called with any arguments. Source code is available at \url{https://raw.githubusercontent.com/gardiners/a1t1/master/test_me.sh}
+
+\bashfile{test_me.sh}
+
+\section{Question 3}
+
+\subsection{a)}
+
+\textbf{Program 24} is the shell script \texttt{time-signal.sh}, printed at Wünschiers 10.11.2. The script is provided online by Wünschiers with the URL
+\url{https://www.staff.hs-mittweida.de/~wuenschi/data/media/compbiolbook/chapter-10-shell-programming--time-signal.sh}. Since this is a publicly available URL, we can easily use \texttt{curl} to read the script from Wünschiers' webserver and write it to a directory on our Ubuntu instance. \texttt{>}.
+
+First, we create the directory \url{~/bin}:
+\begin{bashinline}
+ubuntu@ip-172-31-20-200:~$ mkdir -p ~/bin
+ubuntu@ip-172-31-20-200:~$ ls -lah ~/bin
+total 8.0K
+drwxrwxr-x  2 ubuntu ubuntu 4.0K Mar 17 10:23 .
+drwxr-xr-x 12 ubuntu ubuntu 4.0K Mar 17 09:04 ..
+\end{bashinline}
+
+We have used the \texttt{-p} argument to \texttt{mkdir} as it prevents \texttt{mkdir} from generating an error if the directory already exists (for example, in the case that this command is run by a peer marker).
+
+Now, we can write the file \url{~/bin/time-signal.sh} using \texttt{curl}, and set it to be executable with \texttt{chmod}:
+
+\begin{bashinline}
+ubuntu@ip-172-31-20-200:~$ curl -o ~/bin/time-signal.sh https://www.staff.hs-mittweida.de/~wuenschi/data/media/compbiolbook/chapter-10-shell-programming--time-signal.sh
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   224  100   224    0     0    127      0  0:00:01  0:00:01 --:--:--   127
+ubuntu@ip-172-31-20-200:~$ chmod u+x ~/bin/time-signal.sh
+ubuntu@ip-172-31-20-200:~$ ls -lah ~/bin/time-signal.sh
+-rwxrw-r-- 1 ubuntu ubuntu 224 Mar 17 10:42 /home/ubuntu/bin/time-signal.sh
+\end{bashinline}
+
+We elected to use the \texttt{-o} (output file) switch for \texttt{curl} to specify the destination, although we also could have used the file redirect operator \texttt{>}. 
+
+\subsection{b)}
+
+From the \texttt{man} page for \texttt{bash}:
+
+\begin{bashinline}
+((expression))
+      The expression is evaluated according to the rules described below under ARITHMETIC EVALUATION.  If the value of the expression is non-zero, the return status is 0; otherwise the return  status is 1.  This is exactly equivalent to let "expression".
+\end{bashinline}
+
+and also:
+
+\begin{bashinline}
+Arithmetic Expansion
+    Arithmetic expansion allows the evaluation of an arithmetic expression and the substitution of the result.  The format for arithmetic expansion is:
+
+        $((expression))
+
+    The old format $[expression] is deprecated and will be removed in upcoming versions of bash.
+\end{bashinline}
 
 \end{document}
