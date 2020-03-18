@@ -4,11 +4,11 @@
 # any arguments
 
 # Is the number of arguments zero?
-if (($#)); then
+if ! (($#)); then
 	# Then we have no arguments:
-	echo "This is a TEST"
+	echo "This is NOT a test"
 else
 	# Therefore we have at least one argument:
-	echo "This is NOT a test"
+	echo "This is a TEST"
 fi
 
