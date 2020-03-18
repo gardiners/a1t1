@@ -94,7 +94,7 @@ We present our script \texttt{test\_me.sh}, which prints the text ``This is a TE
 
 \bashfile{test_me.sh}
 
-The conditional \texttt{if} at line 7 checks the number of arguments. Since the integer 0 is interpreted as Boolean FALSE within \texttt{bash}'s , if we have no arguments, the `\texttt{then}' branch of the conditional executes. The complement of \texttt{\$# = 0} is the case where we have any arguments, and in this circumstance the `\texttt{else}' branch is executed.
+The conditional \texttt{if} at line 7 checks the number of arguments. Since the integer 0 is interpreted as Boolean FALSE within \texttt{bash}'s \texttt{((expression))} arithmetic expansion syntax, if we have no arguments, \bashsnippet{! (($#))} will evaluate to TRUE. In this case, the `\texttt{then}' branch of the conditional executes and we get the result ``This is NOT a test''. The complement of \bashsnippet{! (($#))}  is obviously \bashsnippet{(($#))} (the case where we have any arguments) and in this circumstance the `\texttt{else}' branch is executed instead, yielding the message ``This is a TEST''.
 
 We can test our script under either of these conditions:
 
