@@ -5,7 +5,7 @@
 
 # Is the number of arguments zero?
 if (($#)); then
-	# Them we have no arguments:
+	# Then we have no arguments:
 	echo "This is a TEST"
 else
 	# Therefore we have at least one argument:
