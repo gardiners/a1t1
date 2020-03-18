@@ -43,6 +43,14 @@
 
 \maketitle
 
+\section{Note to the marker:}
+
+To easily download and make executable all of the scripts contained in this assignment, please run the following command in your shell:
+
+\begin{bashcode}
+git clone https://github.com/gardiners/a1t1 && chmod u+x a1t1/*.sh
+\end{bashcode}
+
 \section{Question 1}
 
 We present a script \texttt{newer.sh} which, when given a list of filenames as its command-line arguments, prints the name of the newest file. Executable source code is available at \url{https://raw.githubusercontent.com/gardiners/a1t1/master/newer.sh}
@@ -186,7 +194,7 @@ We can therefore construct the sequence of operations that yields the result:
 \item the result is reassigned to \texttt{count}.
 \end{itemize}
 
-This is the same outcome as the original code (that is, incrementing the value of \texttt{\$count}).
+This is the same outcome as the original code (that is, incrementing the value of \texttt{count}).
 
 \subsection{d)}
 
@@ -230,7 +238,7 @@ Chiming the number of quarter hours (line 21) relies on the fact that \texttt{ba
     \item when $45 \leq m < 60$, \bashsnippet{$((minutes / 15))} $= 3$
 \end{itemize}
 
-Another approach to solving this problem would have been using a \bashsnippet{case ... esac} construct with a series of expressions to test which part of the hour \texttt{\$minutes} falls within, but the approach in our script is more concise and arguable more elegant.
+Another approach to solving this problem would have been using a \bashsnippet{case ... esac} construct with a series of expressions to test which part of the hour \texttt{\$minutes} falls within, but the approach in our script is more concise and arguably more elegant.
 
 \end{document}
 
