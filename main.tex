@@ -15,21 +15,26 @@
 \definecolor{mannibg}{HTML}{f0f3f3}
 
 \newminted[bashcode]{bash}{
-    style = friendly,
-    bgcolor=mannibg
+    style = manni,
+    bgcolor = mannibg
 }
 
 \newminted[bashinline]{text}{
-    style = friendly,
-    bgcolor=mannibg,
+    style = manni,
+    bgcolor = mannibg,
     breaklines,
     mathescape
 }
 
 \newmintedfile[bashfile]{bash}{
-    style=manni,
-    bgcolor=mannibg,
+    style = manni,
+    bgcolor = mannibg,
     linenos
+}
+
+\newmintinline[bashsnippet]{bash}{
+    style = manni,
+    bgcolor = mannibg
 }
 
 % Content
@@ -46,7 +51,7 @@ We present a script \texttt{newer.sh} which, when given a list of filenames as i
 
 The \texttt{if} conditional at lines 7-10 checks whether the user has given any arguments. If the list of arguments (that is, \texttt{\$*}) is empty, our script prints a helpful usage message, and then quits.
 
-The heavy lifting is performed by the command \texttt{ls -t \$*} on line 13. The \texttt{-t} argument tells \texttt{ls} to sort its output by file time, and we have provided our list of script-calling arguments \texttt{\$*} as the input. The output of \texttt{ls} is captured by the \texttt{\$()} construct, and then captured again by an outer pair of parentheses to form a \texttt{bash} array which we have named \texttt{sorted}.
+The heavy lifting is performed by the command \bashsnippet{ls -t $*} on line 13. The \texttt{-t} argument tells \texttt{ls} to sort its output by file time, and we have provided our list of script-calling arguments \texttt{\$*} as the input. The output of \texttt{ls} is captured by the \texttt{\$()} construct, and then captured again by an outer pair of parentheses to form a \texttt{bash} array which we have named \texttt{sorted}.
 
 To print the name of the newest file, we simply return the first element (ie element \texttt{[0]}) of our array at line 15. 
 
@@ -85,11 +90,11 @@ Usage: ./newer.sh [FILE]...
 
 \section{Question 2}
 
-We present our script \texttt{test\_me.sh}, which prints the text ``This is a TEST'' to the terminal if called without any arguments, but prints ``This is NOT a test'' if called with any arguments. Source code is available at \url{https://raw.githubusercontent.com/gardiners/a1t1/master/test_me.sh}
+We present our script \texttt{test\_me.sh}, which prints the text ``This is a TEST'' to the terminal if called with any arguments, but prints ``This is NOT a test'' if called without an argument. Source code is available at \url{https://raw.githubusercontent.com/gardiners/a1t1/master/test_me.sh}
 
 \bashfile{test_me.sh}
 
-The conditional \texttt{if} at line 7 checks the number of arguments. Since the integer 0 is interpreted as Boolean TRUE in \texttt{bash}, if we have no arguments, the `\texttt{then}' branch of the conditional executes. The complement of \texttt{\$# = 0} is the case where we have any arguments, and in this circumstance the `\texttt{else}' branch is executed.
+The conditional \texttt{if} at line 7 checks the number of arguments. Since the integer 0 is interpreted as Boolean FALSE within \texttt{bash}'s , if we have no arguments, the `\texttt{then}' branch of the conditional executes. The complement of \texttt{\$# = 0} is the case where we have any arguments, and in this circumstance the `\texttt{else}' branch is executed.
 
 We can test our script under either of these conditions:
 
@@ -163,7 +168,7 @@ Which we compare to the current form of line 9 of \texttt{time-signal.sh}:
 count=$[$count+1]
 \end{bashcode}
 
-So, the syntax ``\texttt{let count=count+1}'' evaluates \texttt{count+1} and reassigns it to \texttt{count}, which is the same outcome as performing the evaluation using arithmetic expansion. When using \texttt{let}, the \texttt{\$} can be omitted from the variable names.
+So, the syntax \bashsnippet{let count=count+1} evaluates \texttt{count+1} and reassigns it to \texttt{count}, which is the same outcome as performing the evaluation using arithmetic expansion. When using \texttt{let}, the \texttt{\$} can be omitted from the variable names.
 
 \subsection{c)}
 
@@ -181,7 +186,7 @@ We can therefore construct the sequence of operations that yields the result:
 \item the result is reassigned to \texttt{count}.
 \end{itemize}
 
-This is the same outcome as the original code (that is, incrementing the value of \texttt{count}).
+This is the same outcome as the original code (that is, incrementing the value of \texttt{\$count}).
 
 \subsection{d)}
 
@@ -196,19 +201,7 @@ Arithmetic Expansion
     The old format $[expression] is deprecated and will be removed in upcoming versions of bash.
 \end{bashinline}
 
-So, the expressions
-
-\begin{bashcode}
-$((count+1))
-\end{bashcode}
-
-and
-
-\begin{bashcode}
-$[$count+1]
-\end{bashcode}
-
-are functionally identical, although the latter form should be avoided as it may stop working in a future version of \texttt{bash}. The inner \texttt{\$} symbol could safely be omitted in the original code, in keeping with \texttt{bash}'s rules for arithmetic expansion and arithmetic evaluation.
+So, the expressions \bashsnippet{((count+1))} and \bashsnippet{$[$count+1]} are functionally identical, although the latter form should be avoided as it may stop working in a future version of \texttt{bash}. The inner \texttt{\$} symbol could safely be omitted in the original code, in keeping with \texttt{bash}'s rules for arithmetic expansion and arithmetic evaluation.
 
 Both versions of the code increment \texttt{count}.
 
@@ -218,7 +211,26 @@ We have altered the \texttt{time-signal.sh} script to meet the question requirem
 
 \bashfile{time-signal.sh}
 
-At lines 5-7, we define a \texttt{bash} function which 
+At lines 6-11, we define a \texttt{bash} function called \texttt{chime} which takes a single argument, the number of chimes to loop through. We have done this rather than repeat the chime loop code at multiple points in our script. Within the function definition, \texttt{\$1} evaluates to the function's first argument, not the script's first argument. We have used a slightly more concise and C-like \texttt{for} loop syntax than Wünschiers' original script. This is a stylistic choice only and does not affect the operation of the loop in any way.
+
+At lines 14 and 15 we store the hour and minute values for the present time. The datetime formatting codes can be found in \texttt{man date}:
+
+\begin{bashinline}
+    %I     hour (01..12)
+    %M     minute (00..59)
+\end{bashinline}
+
+We then chime the hours, as in the original script, at line 18. The three-second pause is executed at line 19.
+
+Chiming the number of quarter hours (line 21) relies on the fact that \texttt{bash} arithmetic evaluation with \texttt{\$((expression))} is performed on integers only. So, the division operator \texttt{/} actually performs integer division, and returns only the integer quotient. Therefore, at $m$ minutes past the hour,
+\begin{itemize}
+    \item when $0 \leq m < 15$, \bashsnippet{$((minutes / 15))} $= 0$
+    \item when $15 \leq m < 30$, \bashsnippet{$((minutes / 15))} $= 1$
+    \item when $30 \leq m < 45$, \bashsnippet{$((minutes / 15))} $= 2$
+    \item when $45 \leq m < 60$, \bashsnippet{$((minutes / 15))} $= 3$
+\end{itemize}
+
+Another approach to solving this problem would have been using a \bashsnippet{case ... esac} construct with a series of expressions to test which part of the hour \texttt{\$minutes} falls within, but the approach in our script is more concise and arguable more elegant.
 
 \end{document}
 
