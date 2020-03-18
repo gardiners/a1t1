@@ -1,7 +1,8 @@
 #!/bin/bash
 # Modified time-signal.sh with more chiming.
 
-# Extract the chiming loop into a function for reuse throughout the script:
+# Extract the chiming loop into a function for reuse throughout the script.
+# Takes one argument: the number of chimes.
 function chime {
 	for ((i = 0; i < $1; i++ )); do
 		echo -e "\a"
